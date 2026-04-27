@@ -1,33 +1,58 @@
+// ==============================
+// HELPERS
+// ==============================
+const qs = (s) => document.querySelector(s);
+const qsa = (s) => document.querySelectorAll(s);
+
 
 // ==============================
-// LOAD COMPONENTS (FINAL CLEAN)
+// LOAD COMPONENTS
 // ==============================
-function loadComponent(id, file, callback) {
-  fetch(file)
-    .then(res => {
-      if (!res.ok) throw new Error("Component not found: " + file);
-      return res.text();
-    })
-    .then(data => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = data;
+async function loadComponent(id, file, callback) {
+  try {
+    const res = await fetch(file);
+    if (!res.ok) throw new Error("Component not found: " + file);
 
-      if (callback) callback();
-    })
-    .catch(err => console.error(err));
+    const html = await res.text();
+    const el = document.getElementById(id);
+
+    if (el) el.innerHTML = html;
+
+    if (callback) callback();
+
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-// SIMPLE PATHS NOW
-loadComponent("navbar-placeholder", "navbar.html", initNavbar);
-loadComponent("footer-placeholder", "footer.html");
-loadComponent("contact-placeholder", "contact.html");
 
 // ==============================
-// NAVBAR INIT (AFTER LOAD)
+// INIT APP (ONE ENTRY POINT)
+// ==============================
+document.addEventListener("DOMContentLoaded", () => {
+
+  // LOAD COMPONENTS
+  loadComponent("navbar-placeholder", "navbar.html", initNavbar);
+  loadComponent("footer-placeholder", "footer.html");
+  loadComponent("contact-placeholder", "contact.html");
+
+  // INIT FEATURES
+  initCounters();
+  initTestimonials();
+  initAnimations();
+  initContactForm();
+  initTimeline();
+  initSeeMore();
+
+});
+
+
+// ==============================
+// NAVBAR
 // ==============================
 function initNavbar() {
-  const menuIcon = document.getElementById("menuIcon");
-  const navLinks = document.getElementById("navLinks");
+  const menuIcon = qs("#menuIcon");
+  const navLinks = qs("#navLinks");
 
   if (menuIcon && navLinks) {
     menuIcon.addEventListener("click", () => {
@@ -35,7 +60,7 @@ function initNavbar() {
       navLinks.classList.toggle("active");
     });
 
-    document.querySelectorAll(".nav-links a").forEach(link => {
+    qsa(".nav-links a").forEach(link => {
       link.addEventListener("click", () => {
         menuIcon.classList.remove("active");
         navLinks.classList.remove("active");
@@ -43,144 +68,56 @@ function initNavbar() {
     });
   }
 
-  // ✅ Run active nav AFTER navbar loads
   handleActiveNav();
 }
 
 
 // ==============================
-// SAFE DOM LOAD
-// ==============================
-document.addEventListener("DOMContentLoaded", () => {
-
-  // ==============================
-  // TESTIMONIAL SLIDER
-  // ==============================
-  const cards = document.querySelectorAll(".testimonial-card");
-  let index = 0;
-
-  function showSlide(i) {
-    if (!cards.length) return;
-    cards.forEach(card => card.classList.remove("active"));
-    cards[i].classList.add("active");
-  }
-
-  function autoSlide() {
-    index = (index + 1) % cards.length;
-    showSlide(index);
-  }
-
-  if (cards.length > 0) {
-    showSlide(index);
-    setInterval(autoSlide, 4000);
-  }
-
-
-  // ==============================
-  // ANIMATED COUNTERS (SMOOTH)
-  // ==============================
-  const counters = document.querySelectorAll(".counter");
-
-  if (counters.length > 0) {
-    const counterObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const counter = entry.target;
-          const target = parseInt(counter.getAttribute("data-target")) || 0;
-
-          const duration = 2000;
-          const startTime = performance.now();
-
-          const update = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
-            const ease = 1 - Math.pow(1 - progress, 3);
-            const value = Math.floor(ease * target);
-
-            counter.innerText = value;
-
-            if (progress < 1) {
-              requestAnimationFrame(update);
-            } else {
-              counter.innerText = target + "+";
-            }
-          };
-
-          requestAnimationFrame(update);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    counters.forEach(counter => counterObserver.observe(counter));
-  }
-
-});
-
-// ==============================
-// ACTIVE NAV (FINAL SMART SYSTEM)
+// ACTIVE NAV + SCROLLSPY
 // ==============================
 function handleActiveNav() {
 
-  const navItems = document.querySelectorAll(".nav-links a");
-  const sections = document.querySelectorAll("section");
+  const navItems = qsa(".nav-links a");
+  const sections = qsa("section");
 
-  let currentPage = window.location.pathname.split("/").pop();
-  if (!currentPage) currentPage = "index.html";
+  let currentPage = window.location.pathname.split("/").pop() || "index.html";
 
-  /* ==============================
-     PAGE BASED ACTIVE
-  ============================== */
+  // PAGE ACTIVE
   navItems.forEach(link => {
-
     const href = link.getAttribute("href");
-
-    // RESET
     link.classList.remove("active");
 
-    // EXACT MATCH ONLY ✅
     if (href === currentPage) {
       link.classList.add("active");
     }
-
   });
 
-  /* ==============================
-     SCROLL SPY (ONLY INDEX)
-  ============================== */
-  if (currentPage === "index.html" && sections.length > 0) {
+  // SCROLLSPY (ONLY HOME)
+  if (currentPage === "index.html" && sections.length) {
 
     window.addEventListener("scroll", () => {
 
       let current = "";
 
       sections.forEach(section => {
-        const sectionTop = section.offsetTop - 120;
-        const sectionHeight = section.offsetHeight;
+        const top = section.offsetTop - 120;
+        const height = section.offsetHeight;
 
-        if (
-          window.scrollY >= sectionTop &&
-          window.scrollY < sectionTop + sectionHeight
-        ) {
-          current = section.getAttribute("id");
+        if (window.scrollY >= top && window.scrollY < top + height) {
+          current = section.id;
         }
       });
 
       navItems.forEach(link => {
-
         const href = link.getAttribute("href");
 
-        // Only handle anchor links
-        if (href && href.includes("#")) {
-
+        if (href.includes("#")) {
           link.classList.remove("active");
 
           if (href.includes(current)) {
             link.classList.add("active");
           }
-
         }
-
       });
 
     });
@@ -189,133 +126,174 @@ function handleActiveNav() {
 
 }
 
-// ==============================
-// SCROLL ANIMATION (SMART)
-// ==============================
-const observer = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      entry.target.classList.add("show");
-
-      // run only once (premium behavior)
-      observer.unobserve(entry.target);
-    }
-  });
-},{
-  threshold:0.2
-});
-
-// APPLY TO ALL ELEMENTS
-document.querySelectorAll("[data-animate]").forEach(el=>{
-  observer.observe(el);
-});
 
 // ==============================
-// contact form (SMART SYSTEM)
+// COUNTERS
 // ==============================
+function initCounters() {
+  const counters = qsa(".counter");
+  if (!counters.length) return;
 
-document.addEventListener("DOMContentLoaded", () => {
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
 
-  const form = document.querySelector(".contact-form");
+      const el = entry.target;
 
-  if(form){
-    form.addEventListener("submit", async (e)=>{
-      e.preventDefault();
+      if (el.dataset.started) return;
+      el.dataset.started = "true";
 
-      const btn = form.querySelector("button");
-      const originalText = btn.innerHTML;
+      const target = parseInt(el.dataset.target);
+      if (isNaN(target)) return;
 
-      btn.innerHTML = "Sending...";
-      btn.disabled = true;
+      const start = performance.now();
+      const duration = 2000;
 
-      const data = new FormData(form);
+      const animate = (time) => {
+        const progress = Math.min((time - start) / duration, 1);
+        el.innerText = Math.floor(progress * target);
 
-      try{
-        const response = await fetch(form.action, {
-          method: "POST",
-          body: data,
-          headers: { 'Accept': 'application/json' }
-        });
+        if (progress < 1) requestAnimationFrame(animate);
+        else el.innerText = target + "+";
+      };
 
-        if(response.ok){
-
-          // ✅ SUCCESS
-          btn.innerHTML = "✅ Message Sent";
-          form.reset();
-
-          // 🔥 FORCE REDIRECT (NO CONFLICT)
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 1200);
-
-          return; // ❗ important (stop further execution)
-
-        }else{
-          btn.innerHTML = "❌ Error";
-        }
-
-      }catch(error){
-        btn.innerHTML = "❌ Failed";
-      }
-
-      // ONLY RUN IF FAILED
-      setTimeout(()=>{
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      },2000);
-
+      requestAnimationFrame(animate);
+      obs.unobserve(el);
     });
+  }, { threshold: 0.5 });
+
+  counters.forEach(c => observer.observe(c));
+}
+
+
+// ==============================
+// TESTIMONIALS
+// ==============================
+function initTestimonials() {
+  const cards = qsa(".testimonial-card");
+  if (!cards.length) return;
+
+  let index = 0;
+
+  function show(i) {
+    cards.forEach(c => c.classList.remove("active"));
+    cards[i].classList.add("active");
   }
 
-});
+  setInterval(() => {
+    index = (index + 1) % cards.length;
+    show(index);
+  }, 4000);
+
+  show(0);
+}
+
 
 // ==============================
-// TIMELINE SCROLL PROGRESS
+// ANIMATIONS
 // ==============================
-const timeline = document.querySelector(".timeline");
-const line = document.querySelector(".timeline-line");
+function initAnimations() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
 
-if (timeline && line) {
-  window.addEventListener("scroll", () => {
+  qsa("[data-animate]").forEach(el => observer.observe(el));
+}
 
-    const rect = timeline.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
 
-    let progress = (windowHeight - rect.top) / rect.height;
-    progress = Math.max(0, Math.min(1, progress));
+// ==============================
+// CONTACT FORM
+// ==============================
+function initContactForm() {
+  const form = qs(".contact-form");
+  if (!form) return;
 
-    line.style.setProperty("--progress", progress * 100 + "%");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
+    const btn = form.querySelector("button");
+    const original = btn.innerHTML;
+
+    btn.innerHTML = "Sending...";
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" }
+      });
+
+      if (res.ok) {
+        btn.innerHTML = "✅ Message Sent";
+        form.reset();
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1200);
+
+        return;
+      }
+
+      btn.innerHTML = "❌ Error";
+
+    } catch {
+      btn.innerHTML = "❌ Failed";
+    }
+
+    setTimeout(() => {
+      btn.innerHTML = original;
+      btn.disabled = false;
+    }, 2000);
   });
 }
 
-// ==============================
-// PRODUCTS "SEE MORE" BUTTON 🔥
-// ==============================
-document.addEventListener("click", function(e) {
 
-  if (e.target.classList.contains("see-more-btn")) {
+// ==============================
+// TIMELINE
+// ==============================
+function initTimeline() {
+  const timeline = qs(".timeline");
+  const line = qs(".timeline-line");
+  if (!timeline || !line) return;
+
+  window.addEventListener("scroll", () => {
+    const rect = timeline.getBoundingClientRect();
+    const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / rect.height));
+    line.style.setProperty("--progress", progress * 100 + "%");
+  });
+}
+
+
+// ==============================
+// SEE MORE
+// ==============================
+function initSeeMore() {
+  document.addEventListener("click", (e) => {
+
+    if (!e.target.classList.contains("see-more-btn")) return;
 
     const btn = e.target;
     const category = btn.closest(".product-category");
     const grid = category.querySelector(".product-grid");
 
-    // TOGGLE CLASS
     grid.classList.toggle("expanded");
 
-    // CHANGE BUTTON TEXT
     if (grid.classList.contains("expanded")) {
       btn.innerText = "See Less";
     } else {
       btn.innerText = "See More";
 
-      // 🔥 OPTIONAL: scroll back to section top (premium UX)
       category.scrollIntoView({
         behavior: "smooth",
         block: "start"
       });
     }
 
-  }
-
-});
+  });
+}
