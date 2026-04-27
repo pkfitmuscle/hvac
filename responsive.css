@@ -1,0 +1,431 @@
+/* ==============================
+   BREAKPOINTS STRUCTURE
+   1200px → small desktop
+   900px  → tablet
+   768px  → mobile
+   480px  → small mobile
+============================== */
+/* ==============================
+   LARGE SCREENS (≤1200px) – PREMIUM
+============================== */
+@media (max-width:1200px){
+
+  .container{
+    width:92%;
+    max-width:1100px;
+  }
+
+  /* ===== TYPOGRAPHY (FLUID) ===== */
+  .hero-content h1,
+  .projects-hero h1,
+  .about-content h1{
+    font-size:clamp(2.2rem, 3vw, 2.6rem);
+    line-height:1.2;
+  }
+
+  .section-header h2{
+    font-size:clamp(1.6rem, 2.5vw, 1.9rem);
+  }
+
+}
+
+
+/* ==============================
+   TABLET (≤900px) – PREMIUM
+============================== */
+@media (max-width:900px){
+
+  /* ===== SPACING ===== */
+  section{
+    padding:70px 0;
+  }
+
+  .container{
+    width:94%;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .hero-content h1{
+    font-size:clamp(2rem, 5vw, 2.4rem);
+    line-height:1.3;
+  }
+
+  .projects-hero h1{
+    font-size:clamp(1.8rem, 4.5vw, 2.2rem);
+  }
+
+  .section-header h2{
+    font-size:clamp(1.4rem, 4vw, 1.8rem);
+  }
+
+  p{
+    font-size:14px;
+    line-height:1.6;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn{
+    padding:10px 18px;
+    font-size:13.5px;
+    gap:6px;
+  }
+
+  /* ===== GRID IMPROVEMENT ===== */
+  .hero-grid,
+  .about-grid{
+    gap:30px;
+  }
+
+}
+
+/* ==============================
+   MOBILE (≤768px)
+============================== */
+@media (max-width:768px){
+
+  /* ===== GLOBAL ===== */
+  section{
+    padding:80px 0;
+  }
+
+  .container{
+    width:94%;
+  }
+
+  /* ===== NAVBAR ===== */
+  .nav-wrapper{
+    border-radius:20px;
+  }
+
+.nav-links{
+    position:fixed;
+    top:-100%;
+    left:0;
+    width:100%;
+    pointer-events:none;
+
+    background:rgba(2,6,23,0.95);
+    backdrop-filter:blur(12px);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    gap:25px;
+    padding:100px 0 40px;
+
+    transition:0.5s cubic-bezier(.22,1,.36,1);
+    z-index:1000;
+
+    opacity:0;
+    transform:translateY(-20px);
+  }
+
+  .nav-links.active{
+    pointer-events:auto;
+    top:0;
+    opacity:1;
+    transform:translateY(0);
+  }
+  
+  .menu-icon{
+    display:block;
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:100px 0 80px;
+  }
+
+  .hero-bg{
+    background-attachment:scroll;
+  }
+
+  .hero-grid{
+    grid-template-columns:1fr;
+    text-align:center;
+    gap:30px;
+  }
+
+  .hero-content h1{
+    font-size:2.2rem;
+    line-height:1.3;
+  }
+
+  .hero-content p{
+    font-size:14px;
+    max-width:100%;
+  }
+
+  .hero-buttons{
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    margin-top:20px;
+  }
+
+  .hero-buttons .btn{
+    width:100%;
+    max-width:280px;
+    justify-content:center;
+  }
+
+  /* ===== GRID SYSTEM ===== */
+  .hero-grid,
+  .about-grid,
+  .projects-grid,
+  .products-grid,
+  .location-grid,
+  .featured-grid,
+  .ceo-section{
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+
+  /* ===== PRODUCTS ===== */
+  .products-row{
+    grid-template-columns:1fr;
+    gap:30px;
+  }
+
+  .products-row.reverse{
+    direction:ltr;
+  }
+
+  .products-content{
+    position:relative;
+    background:#020617;
+  }
+
+  /* ===== PROJECTS ===== */
+  .project-overlay{
+    position:relative;
+    transform:none;
+    background:#020617;
+    padding:20px;
+  }
+
+  .project-card img{
+    height:220px;
+  }
+
+  .project-card:hover .project-overlay{
+    transform:none;
+  }
+
+  /* ===== CTA ===== */
+  .cta-box{
+    flex-direction:column;
+    text-align:center;
+  }
+
+  .cta-buttons{
+    justify-content:center;
+    width:100%;
+  }
+
+  .cta-buttons .btn{
+    width:100%;
+    max-width:280px;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer-bottom{
+    flex-direction:column;
+    gap:10px;
+  }
+
+   .contact{
+    padding:80px 0;
+  }
+
+  .contact-grid{
+    grid-template-columns:1fr;
+    gap:30px;
+  }
+
+  /* TEXT */
+  .contact-info h2{
+    font-size:24px;
+    text-align:center;
+  }
+
+  .contact-info p{
+    text-align:center;
+    font-size:14px;
+  }
+
+  .info-box{
+    justify-content:center;
+    font-size:14px;
+    flex-wrap:wrap;
+  }
+
+  /* FORM */
+  .contact-form{
+    padding:25px;
+    border-radius:15px;
+  }
+
+  /* INPUTS */
+  .input-group{
+    margin-bottom:20px;
+  }
+
+  .input-group input,
+  .input-group textarea{
+    padding:14px;
+    font-size:14px;
+  }
+
+  /* LABEL */
+  .input-group label{
+    font-size:12px;
+  }
+
+  /* BUTTON */
+  .contact-btn{
+    padding:14px;
+    font-size:14px;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline-line{
+    left:20px;
+    transform:none;
+  }
+
+  .timeline-item{
+    width:100%;
+    left:0 !important;
+    padding:20px 20px 20px 60px;
+    text-align:left;
+  }
+
+  .timeline-item::before{
+    left:12px !important;
+    right:auto;
+  }
+
+  .why-choose .timeline-line{
+    left:20px;
+  }
+
+  .why-choose .timeline-item{
+    padding-left:60px;
+  }
+
+  /* ===== ABOUT PAGE ===== */
+  .about-hero::before{
+    background-attachment:scroll;
+  }
+
+  .about-content h1{
+    font-size:32px;
+  }
+
+  .about-content p{
+    font-size:14px;
+    max-width:100%;
+  }
+
+  .about-images{
+    display:none;
+  }
+
+  /* ===== LOCATION ===== */
+  .location-map iframe{
+    height:250px;
+  }
+
+  /* ===== CEO ===== */
+  .ceo-content h3{
+    font-size:24px;
+  }
+
+  .ceo-message{
+    font-size:14px;
+    line-height:1.7;
+  }
+
+  /* ===== TRUST ===== */
+  .trust-grid{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+
+  .trust-inner{
+    height:220px;
+  }
+
+}
+
+/* ==============================
+   SMALL MOBILE (≤480px) – PREMIUM
+============================== */
+@media (max-width:480px){
+
+  /* ===== GLOBAL ===== */
+  section{
+    padding:60px 0; /* tighter spacing for small screens */
+  }
+
+  .container{
+    width:95%;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .hero-content h1{
+    font-size:1.9rem;
+    line-height:1.3;
+  }
+
+  .section-header h2,
+  .about-text h2{
+    font-size:20px;
+    line-height:1.3;
+  }
+
+  p{
+    font-size:13px;
+    line-height:1.6;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn{
+    width:100%;
+    max-width:260px;
+    text-align:center;
+    justify-content:center;
+    padding:10px 16px;
+    font-size:13px;
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:80px 0 60px;
+  }
+
+  .hero-buttons{
+    gap:10px;
+  }
+
+  /* ===== IMAGES ===== */
+  img{
+    max-width:100%;
+    height:auto;
+  }
+
+  /* ===== CARDS ===== */
+  .products-card img,
+  .project-card img{
+    height:200px;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline-item{
+    padding:15px 15px 15px 50px;
+  }
+
+}
