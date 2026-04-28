@@ -170,7 +170,7 @@ section{
 .nav-wrapper{
   width:100%;
 
-  background:rgba(15,23,42,0.6);
+  background:rgb(15, 23, 42);
   backdrop-filter:blur(20px);
 
   border:1px solid var(--border-soft);
@@ -212,7 +212,7 @@ section{
    LOGO
 ============================== */
 .logo img{
-  height:45px;
+  height:50px;
   transition:0.3s;
 }
 
