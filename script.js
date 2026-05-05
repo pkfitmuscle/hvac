@@ -31,10 +31,14 @@ async function loadComponent(id, file, callback) {
 // ==============================
 document.addEventListener("DOMContentLoaded", () => {
 
-  // LOAD COMPONENTS
-  loadComponent("navbar-placeholder", "navbar.html", initNavbar);
-  loadComponent("footer-placeholder", "footer.html");
-  loadComponent("contact-placeholder", "contact.html");
+  // DETECT PATH
+  const isSubPage = window.location.pathname.includes("/htmls/");
+  const base = isSubPage ? "../" : "";
+
+  // LOAD COMPONENTS (FIXED)
+  loadComponent("navbar-placeholder", base + "navbar.html", initNavbar);
+  loadComponent("footer-placeholder", base + "footer.html");
+  loadComponent("contact-placeholder", base + "contact.html");
 
   // INIT FEATURES
   initCounters();
@@ -73,18 +77,29 @@ function initNavbar() {
 
 
 // ==============================
-// ACTIVE NAV + SCROLLSPY
+// ACTIVE NAV + SCROLLSPY (FIXED)
 // ==============================
 function handleActiveNav() {
 
   const navItems = qsa(".nav-links a");
   const sections = qsa("section");
 
-  let currentPage = window.location.pathname.split("/").pop() || "index.html";
+  let currentPage = window.location.pathname.split("/").pop();
 
-  // PAGE ACTIVE
+  // 🔥 fix for "/" homepage
+  if (!currentPage || currentPage === "") {
+    currentPage = "index.html";
+  }
+
+  // ==============================
+  // PAGE ACTIVE FIX
+  // ==============================
   navItems.forEach(link => {
-    const href = link.getAttribute("href");
+    let href = link.getAttribute("href");
+
+    // 🔥 normalize (remove leading slash)
+    href = href.replace(/^\//, "");
+
     link.classList.remove("active");
 
     if (href === currentPage) {
@@ -92,7 +107,9 @@ function handleActiveNav() {
     }
   });
 
+  // ==============================
   // SCROLLSPY (ONLY HOME)
+  // ==============================
   if (currentPage === "index.html" && sections.length) {
 
     window.addEventListener("scroll", () => {
@@ -193,16 +210,38 @@ function initTestimonials() {
 // ANIMATIONS
 // ==============================
 function initAnimations() {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("show");
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
 
-  qsa("[data-animate]").forEach(el => observer.observe(el));
+  const elements = qsa("[data-animate]");
+  if (!elements.length) return;
+
+  const observer = new IntersectionObserver((entries, obs) => {
+
+    entries.forEach(entry => {
+
+      if (!entry.isIntersecting) return;
+
+      const el = entry.target;
+
+      // 🔥 delay support (data-delay="200")
+      const delay = el.dataset.delay || 0;
+
+      setTimeout(() => {
+        el.classList.add("show");
+      }, delay);
+
+      // 🔥 animate once (default)
+      if (!el.dataset.repeat) {
+        obs.unobserve(el);
+      }
+
+    });
+
+  }, {
+    threshold: 0.25,
+    rootMargin: "0px 0px -50px 0px"
+  });
+
+  elements.forEach(el => observer.observe(el));
 }
 
 
@@ -297,3 +336,4 @@ function initSeeMore() {
 
   });
 }
+
